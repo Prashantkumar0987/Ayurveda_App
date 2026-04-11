@@ -16,7 +16,7 @@ A full-stack web app that suggests Ayurvedic remedies based on symptoms.
 
 ![Home](https://github.com/Prashantkumar0987/Ayurveda_App/blob/40c75fa09aaecad02254497d4c95e3eba676d1de/Screenshot%202026-04-12%20015205.png)
 ![Result](https://github.com/Prashantkumar0987/Ayurveda_App/blob/647faac438c407fcb13ef963fd86a355c74f9dbd/Screenshot%202026-04-12%20013946.png)
-![Result](https://github.com/Prashantkumar0987/Ayurveda_App/blob/61802942c9425cb0d800e5a2cd27f71d695eba13/Screenshot%202026-04-12%20013946.png)
+![Result](https://github.com/Prashantkumar0987/Ayurveda_App/blob/4e04a8328de91d58e0130ea409d6297bb1d43c5a/Screenshot%202026-04-12%20013906.png)
 
 
 
