@@ -36,7 +36,7 @@ function App() {
     if (combinedSymptoms.length === 0) return;
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/recommend", {
+      const response = await fetch("https://ayurveda-app-5-dt9t.onrender.com", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
