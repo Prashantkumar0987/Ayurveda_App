@@ -12,7 +12,7 @@ function App() {
     { label: "Cough", icon: "🤧" },
     { label: "Sneezing", icon: "🤧" },
     { label: "Runny Nose", icon: "💧" },
-    { label: "Stomach Pain", icon: "😫" },
+    { label: "Stomach Pain", icon: "😫j" },
     { label: "Bloating", icon: "🎈" },
     { label: "Gas", icon: "💨" },
     { label: "Anxiety", icon: "😰" },
