@@ -1,0 +1,62 @@
+[
+    {
+        "disease": "Common Cold",
+        "symptoms": [
+            "Cough",
+            "Sneezing",
+            "Runny Nose"
+        ],
+        "remedies": [
+            "Drink warm turmeric milk",
+            "Steam inhalation"
+        ],
+        "herbs": [
+            "Tulsi",
+            "Ginger"
+        ],
+        "diet": [
+            "Warm food",
+            "Avoid cold drinks"
+        ]
+    },
+    {
+        "disease": "Indigestion",
+        "symptoms": [
+            "Stomach Pain",
+            "Bloating",
+            "Gas"
+        ],
+        "remedies": [
+            "Drink jeera water",
+            "Take ginger"
+        ],
+        "herbs": [
+            "Ajwain",
+            "Ginger"
+        ],
+        "diet": [
+            "Light food",
+            "Avoid oily food"
+        ]
+    },
+    {
+        "disease": "Stress",
+        "symptoms": [
+            "Anxiety",
+            "Fatigue",
+            "Headache"
+        ],
+        "remedies": [
+            "Meditation",
+            "Yoga"
+        ],
+        "herbs": [
+            "Ashwagandha",
+            "Brahmi"
+        ],
+        "diet": [
+            "Healthy diet",
+            "Avoid caffeine"
+        ]
+    }
+]
