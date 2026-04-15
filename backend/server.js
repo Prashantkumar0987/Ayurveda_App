@@ -1,5 +1,8 @@
 const express = require("express");
 const cors = require("cors");
+app.use(cors({
+  origin: "*", // or your Vercel URL
+}));
 const data = require("./data.json");
 
 const app = express();
