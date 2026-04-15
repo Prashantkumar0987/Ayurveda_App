@@ -42,7 +42,7 @@ function App() {
     setResult(null);
 
     try {
-      const response = await fetch("https://ayurveda-app-5-dt9t.onrender.com/recommend", {
+      const response = await fetch("https://ayurveda-app-5-dt9t.onrender.com", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
