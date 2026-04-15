@@ -1,6 +1,7 @@
 import { useState } from "react";
-import "./App.css"; // ✅ FIXED case-sensitive import
-import { Search } from "lucide-react";
+import "./App.css";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Loader2, Sparkles, CheckCircle2 } from "lucide-react";
 
 function App() {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
@@ -52,163 +53,151 @@ function App() {
         body: JSON.stringify({ symptoms: combinedSymptoms })
       });
 
-      // ✅ Handle server errors
       if (!response.ok) {
-        throw new Error("Server not responding");
+        throw new Error("Server error");
       }
 
       const data = await response.json();
 
-      // ✅ Safe formatting
-      const formattedResult = {
-        disease: data?.disease || null,
-        remedies: Array.isArray(data?.remedies) ? data.remedies : [],
-        herbs: Array.isArray(data?.herbs) ? data.herbs : [],
-        diet: Array.isArray(data?.diet) ? data.diet : []
-      };
-
-      setResult(formattedResult);
+      setTimeout(() => {
+        setResult({
+          disease: data?.disease || null,
+          remedies: Array.isArray(data?.remedies) ? data.remedies : [],
+          herbs: Array.isArray(data?.herbs) ? data.herbs : [],
+          diet: Array.isArray(data?.diet) ? data.diet : []
+        });
+        setLoading(false);
+      }, 700);
 
     } catch (err) {
-      console.error("ERROR:", err);
-      setError("⚠️ Backend is sleeping or unreachable. Please try again.");
-    } finally {
+      console.error(err);
+      setError("⚠️ Backend is sleeping or unreachable.");
       setLoading(false);
     }
   };
 
   return (
-    <div className="google-container">
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center p-6">
 
       {/* Header */}
-      <header className="google-header">
-        <h1 className="google-logo">
-          <span>A</span><span>y</span><span>u</span><span>r</span>
-          <span>v</span><span>e</span><span>d</span><span>a</span>
+      <motion.div
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-10"
+      >
+        <h1 className="text-5xl font-bold text-emerald-400">
+          Ayurveda AI
         </h1>
-        <p className="google-subtitle">
-          Discover holistic remedies for your symptoms
+        <p className="text-slate-400 mt-2">
+          Smart wellness powered by ancient science 🌿
         </p>
-      </header>
+      </motion.div>
 
-      {/* Main */}
-      <div className="search-area">
+      {/* Search */}
+      <div className="w-full max-w-3xl bg-white/5 p-6 rounded-2xl">
 
-        {/* Search Bar */}
-        <div className="search-bar-container">
-          <Search className="search-icon" size={20} />
+        <div className="flex items-center gap-2 mb-4">
+          <Search />
           <input
             type="text"
-            className="search-input"
-            placeholder="Search symptoms (e.g. Cough, Fever)"
+            placeholder="Search symptoms (comma separated)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            autoFocus
+            className="w-full bg-transparent border-b border-white/20 outline-none p-2"
           />
         </div>
 
-        {/* Suggestions */}
-        <div style={{ marginBottom: "24px" }}>
-          <h2 className="section-label">Quick Suggestions</h2>
-
-          <div className="chips-container">
-            {symptomsList.map((symptom, index) => {
-              const isSelected = selectedSymptoms.includes(symptom.label);
-
-              return (
-                <label
-                  key={index}
-                  className={`filter-chip ${isSelected ? "selected" : ""}`}
-                >
-                  <input
-                    type="checkbox"
-                    className="hidden-checkbox"
-                    onChange={() => handleCheckboxChange(symptom.label)}
-                    checked={isSelected}
-                  />
-                  <span>{symptom.icon}</span>
-                  {symptom.label}
-                </label>
-              );
-            })}
-          </div>
+        {/* Chips */}
+        <div className="flex flex-wrap gap-3 justify-center">
+          {symptomsList.map((symptom, index) => {
+            const active = selectedSymptoms.includes(symptom.label);
+            return (
+              <button
+                key={index}
+                onClick={() => handleCheckboxChange(symptom.label)}
+                className={`px-4 py-2 rounded-full border ${
+                  active
+                    ? "bg-emerald-500 text-black"
+                    : "bg-white/10"
+                }`}
+              >
+                {symptom.icon} {symptom.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Button */}
-        <div className="action-container">
-          <button
-            className="google-btn"
-            onClick={handleSubmit}
-            disabled={loading || (!searchQuery.trim() && selectedSymptoms.length === 0)}
-          >
-            {loading ? "Searching..." : (
-              <>
-                <Search size={16} /> Search
-              </>
-            )}
-          </button>
-        </div>
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="mt-6 w-full py-3 bg-emerald-500 text-black rounded-xl"
+        >
+          {loading ? (
+            <span className="flex justify-center items-center gap-2">
+              <Loader2 className="animate-spin" /> Processing...
+            </span>
+          ) : (
+            "Analyze"
+          )}
+        </button>
 
-        {/* ✅ Loading */}
-        {loading && (
-          <p style={{ marginTop: "20px" }}>⏳ Fetching results...</p>
-        )}
+        {error && <p className="text-red-400 mt-4">{error}</p>}
+      </div>
 
-        {/* ❌ Error */}
-        {error && (
-          <p style={{ color: "red", marginTop: "20px" }}>{error}</p>
-        )}
-
-        {/* Results */}
+      {/* Results */}
+      <AnimatePresence>
         {result && (
-          <div className="results-card">
-
-            <div className="result-header">
-              <h2>{result.disease || "No results found"}</h2>
-              {result.disease && <p>Holistic Ayurvedic approach</p>}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="mt-10 w-full max-w-4xl bg-white/5 p-8 rounded-2xl"
+          >
+            <div className="text-center mb-6">
+              <Sparkles className="mx-auto text-emerald-400 mb-2" />
+              <h2 className="text-3xl font-bold">
+                {result.disease || "No results"}
+              </h2>
             </div>
 
-            {!result.disease && (
-              <p className="no-result">Try different symptoms</p>
-            )}
+            <div className="grid md:grid-cols-3 gap-6">
 
-            {result.disease && (
-              <div className="result-grid">
-
-                <div className="result-section remedies">
-                  <h3>Primary Remedies</h3>
-                  <ul className="result-list">
-                    {result.remedies.length > 0
-                      ? result.remedies.map((item, i) => <li key={i}>{item}</li>)
-                      : <li className="empty">No remedies found</li>}
-                  </ul>
-                </div>
-
-                <div className="result-section herbs">
-                  <h3>Suggested Herbs</h3>
-                  <ul className="result-list">
-                    {result.herbs.length > 0
-                      ? result.herbs.map((item, i) => <li key={i}>{item}</li>)
-                      : <li className="empty">No herbs found</li>}
-                  </ul>
-                </div>
-
-                <div className="result-section diet">
-                  <h3>Dietary Advice</h3>
-                  <ul className="result-list">
-                    {result.diet.length > 0
-                      ? result.diet.map((item, i) => <li key={i}>{item}</li>)
-                      : <li className="empty">No diet suggestions</li>}
-                  </ul>
-                </div>
-
+              {/* Remedies */}
+              <div>
+                <h3 className="text-emerald-400 mb-3">Remedies</h3>
+                {result.remedies.map((r, i) => (
+                  <p key={i} className="flex gap-2">
+                    <CheckCircle2 size={16} /> {r}
+                  </p>
+                ))}
               </div>
-            )}
-          </div>
-        )}
 
-      </div>
+              {/* Herbs */}
+              <div>
+                <h3 className="text-teal-400 mb-3">Herbs</h3>
+                {result.herbs.map((h, i) => (
+                  <p key={i} className="flex gap-2">
+                    <CheckCircle2 size={16} /> {h}
+                  </p>
+                ))}
+              </div>
+
+              {/* Diet */}
+              <div>
+                <h3 className="text-lime-400 mb-3">Diet</h3>
+                {result.diet.map((d, i) => (
+                  <p key={i} className="flex gap-2">
+                    <CheckCircle2 size={16} /> {d}
+                  </p>
+                ))}
+              </div>
+
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
