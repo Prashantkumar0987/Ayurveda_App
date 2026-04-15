@@ -1,47 +1,61 @@
 const express = require("express");
 const cors = require("cors");
-app.use(cors({
-  origin: "*", // or your Vercel URL
-}));
-const data = require("./data.json");
 
 const app = express();
 
-app.use(cors());
+// ✅ Middleware
+app.use(cors({
+  origin: "*"
+}));
 app.use(express.json());
 
-// Test route
+// ✅ Health check route (important for Render)
 app.get("/", (req, res) => {
-    res.send("Ayurveda API is running");
+  res.send("Ayurveda API is running 🚀");
 });
 
-// Recommendation API
-app.post("/recommend", (req, res) => {
-    const userSymptoms = req.body.symptoms || [];
+// ✅ Main API route
+app.post("/", (req, res) => {
+  try {
+    const { symptoms } = req.body;
 
-    let bestMatch = null;
-    let maxScore = 0;
+    if (!symptoms || !Array.isArray(symptoms)) {
+      return res.status(400).json({
+        error: "Invalid input: symptoms must be an array"
+      });
+    }
 
-    data.forEach((item) => {
-        let score = 0;
+    // 👉 Dummy logic (replace later with your real logic)
+    let disease = "General Imbalance";
 
-        item.symptoms.forEach((symptom) => {
-            if (userSymptoms.includes(symptom)) {
-                score++;
-            }
-        });
+    if (symptoms.includes("Cough")) {
+      disease = "Common Cold";
+    } else if (symptoms.includes("Stomach Pain")) {
+      disease = "Indigestion";
+    } else if (symptoms.includes("Anxiety")) {
+      disease = "Stress Disorder";
+    }
 
-        if (score > maxScore) {
-            maxScore = score;
-            bestMatch = item;
-        }
+    const response = {
+      disease,
+      remedies: ["Rest", "Stay hydrated", "Herbal tea"],
+      herbs: ["Tulsi", "Ginger", "Ashwagandha"],
+      diet: ["Warm foods", "Avoid junk", "Drink hot water"]
+    };
+
+    res.json(response);
+
+  } catch (error) {
+    console.error("SERVER ERROR:", error);
+    res.status(500).json({
+      error: "Internal Server Error"
     });
-
-    res.json(bestMatch || { message: "No match found" });
+  }
 });
 
+// ✅ IMPORTANT: Use dynamic PORT (fixes Render crash)
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
