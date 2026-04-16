@@ -1,59 +1,63 @@
 const express = require("express");
 const cors = require("cors");
+const data = require("./data.json");
 
 const app = express();
 
-// ✅ Middleware
-app.use(cors({
-  origin: "*"
-}));
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-// ✅ Health check route (important for Render)
+// Test route
 app.get("/", (req, res) => {
-  res.send("Ayurveda API is running 🚀");
+  res.send("Ayurveda API is running");
 });
 
-// ✅ Main API route
-app.post("/", (req, res) => {
-  try {
-    const { symptoms } = req.body;
+// Recommendation API
+app.post("/recommend", (req, res) => {
+  const { symptoms } = req.body;
 
-    if (!symptoms || !Array.isArray(symptoms)) {
-      return res.status(400).json({
-        error: "Invalid input: symptoms must be an array"
-      });
+  if (!symptoms || symptoms.length === 0) {
+    return res.status(400).json({ error: "No symptoms provided" });
+  }
+
+  // Normalize input
+  const inputSymptoms = symptoms.map(s => s.toLowerCase());
+
+  let bestMatch = null;
+  let maxMatches = 0;
+
+  data.forEach(disease => {
+    const diseaseSymptoms = disease.symptoms.map(s => s.toLowerCase());
+
+    const matches = diseaseSymptoms.filter(symptom =>
+      inputSymptoms.includes(symptom)
+    ).length;
+
+    if (matches > maxMatches) {
+      maxMatches = matches;
+      bestMatch = disease;
     }
+  });
 
-    // 👉 Dummy logic (replace later with your real logic)
-    let disease = "General Imbalance";
-
-    if (symptoms.includes("Cough")) {
-      disease = "Common Cold";
-    } else if (symptoms.includes("Stomach Pain")) {
-      disease = "Indigestion";
-    } else if (symptoms.includes("Anxiety")) {
-      disease = "Stress Disorder";
-    }
-
-    const response = {
-      disease,
-      remedies: ["Rest", "Stay hydrated", "Herbal tea"],
-      herbs: ["Tulsi", "Ginger", "Ashwagandha"],
-      diet: ["Warm foods", "Avoid junk", "Drink hot water"]
-    };
-
-    res.json(response);
-
-  } catch (error) {
-    console.error("SERVER ERROR:", error);
-    res.status(500).json({
-      error: "Internal Server Error"
+  if (!bestMatch) {
+    return res.json({
+      disease: null,
+      remedies: [],
+      herbs: [],
+      diet: []
     });
   }
+
+  res.json({
+    disease: bestMatch.disease,
+    remedies: bestMatch.remedies || [],
+    herbs: bestMatch.herbs || [],
+    diet: bestMatch.diet || []
+  });
 });
 
-// ✅ IMPORTANT: Use dynamic PORT (fixes Render crash)
+// PORT (Render uses this)
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
