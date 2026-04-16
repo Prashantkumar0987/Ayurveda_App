@@ -49,7 +49,7 @@ function App() {
       );
 
       const data = await fetch(
-        "https://your-app-name.onrender.com/recommend",
+        "https://ayurveda-app-7.onrender.com",
         {
           method: "POST",
           headers: {
